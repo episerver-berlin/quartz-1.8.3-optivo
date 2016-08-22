@@ -2774,8 +2774,16 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             	Iterator itr = keys.iterator();
             	while(itr.hasNext()) {
 	                Key triggerKey = (Key) itr.next();
-	
-	                int rowsUpdated = 
+
+                    nextTrigger =
+                        retrieveTrigger(conn, ctxt, triggerKey.getName(), triggerKey.getGroup());
+
+                    // If our trigger is no longer available, try a new one.
+                    if(nextTrigger == null) {
+                        continue;
+                    }
+
+                    int rowsUpdated =
 	                    getDelegate().updateTriggerStateFromOtherState(
 	                        conn,
 	                        triggerKey.getName(), triggerKey.getGroup(), 
@@ -2786,14 +2794,6 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 	                    continue;
 	                }
 	
-	                nextTrigger = 
-	                    retrieveTrigger(conn, ctxt, triggerKey.getName(), triggerKey.getGroup());
-	
-	                // If our trigger is no longer available, try a new one.
-	                if(nextTrigger == null) {
-	                    continue;
-	                }
-	                
 	                break;
             	}
 
