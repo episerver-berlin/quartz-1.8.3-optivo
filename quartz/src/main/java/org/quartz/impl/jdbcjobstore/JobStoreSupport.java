@@ -3867,7 +3867,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             while (!shutdown) {
 
                 if (!shutdown) {
-                    long timeToSleep = getClusterCheckinInterval();
+                    long timeToSleep = getClusterCheckinInterval() * 7 / 10;    // wake up before the time to notify is over
                     long transpiredTime = (System.currentTimeMillis() - lastCheckin);
                     timeToSleep = timeToSleep - transpiredTime;
                     if (timeToSleep <= 0) {
