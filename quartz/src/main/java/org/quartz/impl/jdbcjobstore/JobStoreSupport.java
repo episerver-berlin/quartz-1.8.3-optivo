@@ -33,6 +33,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.MetricName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.Calendar;
@@ -73,6 +76,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
      * 
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
+    private static final Counter CHECKIN_COUNT = Metrics.newCounter(new MetricName("Quartz", "JobStore", "checkin"));
+    private static final Counter JOB_RECOVER_COUNT = Metrics.newCounter(new MetricName("Quartz", "Job", "recovered"));
 
     protected static final String LOCK_TRIGGER_ACCESS = "TRIGGER_ACCESS";
 
@@ -3198,6 +3203,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     protected long lastCheckin = System.currentTimeMillis();
     
     protected boolean doCheckin() throws JobPersistenceException {
+        CHECKIN_COUNT.inc();
         boolean transOwner = false;
         boolean transStateOwner = false;
         boolean recovered = false;
@@ -3462,6 +3468,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                                 storeTrigger(conn, null, rcvryTrig, null, false,
                                         STATE_WAITING, false, true);
                                 recoveredCount++;
+                                JOB_RECOVER_COUNT.inc();
                             } else {
                                 getLog()
                                         .warn(
