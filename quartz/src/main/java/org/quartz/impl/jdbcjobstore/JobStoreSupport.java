@@ -76,8 +76,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
      * 
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
-    private static final Counter CHECKIN_COUNT = Metrics.newCounter(new MetricName("Quartz", "JobStore", "checkin"));
-    private static final Counter JOB_RECOVER_COUNT = Metrics.newCounter(new MetricName("Quartz", "Job", "recovered"));
+    private static final Counter CHECKIN_COUNT = Metrics.newCounter(new MetricName("Quartz", "checkin", "JobStore"));
+    private static final Counter JOB_RECOVER_COUNT = Metrics.newCounter(new MetricName("Quartz", "recovered", "Jobs"));
 
     protected static final String LOCK_TRIGGER_ACCESS = "TRIGGER_ACCESS";
 
@@ -129,6 +129,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     private String selectWithLockSQL = null;
 
     private long clusterCheckinInterval = 7500L;
+
+    private long clusterFailoverTolerance = clusterCheckinInterval;
 
     private ClusterManager clusterManagementThread = null;
 
@@ -303,6 +305,28 @@ public abstract class JobStoreSupport implements JobStore, Constants {
      */
     public void setClusterCheckinInterval(long l) {
         clusterCheckinInterval = l;
+    }
+
+    /**
+     * <p>
+     * Gets the additional amount of time (in milliseconds) a cluster might not have "checked-in"
+     * before it is marked as unresponsive.
+     * Per default its set to 7500ms.
+     * </p>
+     */
+    public long getClusterFailoverTolerance() {
+        return clusterFailoverTolerance;
+    }
+
+    /**
+     * <p>
+     * Sets the additional amount of time (in milliseconds) a cluster might not have "checked-in"
+     * before it is marked as unresponsive.
+     * Per default its set to 7500ms.
+     * </p>
+     */
+    public void setClusterFailoverTolerance(long failoverTolerance) {
+        this.clusterFailoverTolerance = failoverTolerance;
     }
 
     /**
@@ -3354,7 +3378,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         return rec.getCheckinTimestamp() +
             Math.max(rec.getCheckinInterval(), 
                     (System.currentTimeMillis() - lastCheckin)) +
-            7500L;
+            getClusterFailoverTolerance();
     }
     
     protected List clusterCheckIn(Connection conn)
@@ -3874,7 +3898,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             while (!shutdown) {
 
                 if (!shutdown) {
-                    long timeToSleep = getClusterCheckinInterval() * 7 / 10;    // wake up before the time to notify is over
+                    long timeToSleep = getClusterCheckinInterval();
                     long transpiredTime = (System.currentTimeMillis() - lastCheckin);
                     timeToSleep = timeToSleep - transpiredTime;
                     if (timeToSleep <= 0) {

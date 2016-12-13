@@ -66,7 +66,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    private static final Counter JOB_STARTED_COUNT = Metrics.newCounter(new MetricName("Quartz", "Job", "started"));
+    private static final Counter JOB_STARTED_COUNT = Metrics.newCounter(new MetricName("Quartz", "started", "Jobs"));
 
     protected JobExecutionContext jec = null;
 
