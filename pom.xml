@@ -17,8 +17,8 @@
   <url>http://quartz-scheduler.org/</url>
 
   <scm>
-    <connection>scm:git:https://optivo@github.com/optivo/quartz-1.8.3-optivo.git</connection>
-    <developerConnection>scm:git:https://optivo@github.com/optivo/quartz-1.8.3-optivo.git</developerConnection>
+    <connection>scm:git:https://periphylla@github.com/optivo/quartz-1.8.3-optivo.git</connection>
+    <developerConnection>scm:git:https://periphylla@github.com/optivo/quartz-1.8.3-optivo.git</developerConnection>
     <url>https://github.com/optivo/quartz-1.8.3-optivo</url>
   </scm>
 
