@@ -169,25 +169,6 @@
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.7</version>
-            <executions>
-              <execution>
-                <id>aggregate-javadocs</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>aggregate</goal>
-                  <goal>jar</goal>
-                </goals>
-                <configuration>
-                  <bottom><![CDATA[Copyright 2001-{currentYear}, <a href="http://www.terracotta.org">Terracotta, Inc.<a>]]></bottom>
-                  <doctitle>Quartz Enterprise Job Scheduler ${project.version} API</doctitle>
-                  <excludePackageNames>org.quartz.examples</excludePackageNames>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <version>2.2-beta-5</version>
             <configuration>
