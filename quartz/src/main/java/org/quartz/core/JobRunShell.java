@@ -18,6 +18,9 @@
 
 package org.quartz.core;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.MetricName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.Job;
@@ -27,7 +30,6 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobPersistenceException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.quartz.spi.TriggerFiredBundle;
@@ -64,6 +66,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    private static final Counter JOB_STARTED_COUNT = Metrics.newCounter(new MetricName("Quartz", "started", "Jobs"));
 
     protected JobExecutionContext jec = null;
 
@@ -364,7 +367,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
 
             return false;
         }
-
+        JOB_STARTED_COUNT.inc();
         return true;
     }
 
